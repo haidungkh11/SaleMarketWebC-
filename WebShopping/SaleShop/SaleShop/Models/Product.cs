@@ -14,7 +14,7 @@ namespace SaleShop.Models
         public int? CatID { set; get; }
         public int? Price { set; get; }
         public int? Discount { set; get; }
-        public string Thumb { set; get; }
+        public string? Thumb { set; get; }
         public string Video { set; get; }
         public DateTime? DateCreated { set; get; }
         public DateTime? DateModified { set; get; }

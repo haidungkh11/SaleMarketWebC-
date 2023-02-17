@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AspNetCoreHero.ToastNotification.Abstractions;
+﻿using AspNetCoreHero.ToastNotification.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -50,7 +46,7 @@ namespace SaleShop.Areas.Admin.Controllers
 
 
             PagedList<Product> models = new PagedList<Product>(lsProducts.AsQueryable(), pageNumber, pageSize);
-            ViewBag.CurrentCateID = CatID;
+            //ViewBag.CurrentCateID = CatID;
 
             ViewBag.CurrentPage = pageNumber;
 
@@ -105,7 +101,7 @@ namespace SaleShop.Areas.Admin.Controllers
             {
                 product.ProductName = Utilities.ToTitleCase(product.ProductName);
                 if (fThumb != null)
-                {
+                {   //trả về đuôi của file
                     string extension = Path.GetExtension(fThumb.FileName);
                     string image = Utilities.SEOUrl(product.ProductName) + extension;
                     product.Thumb = await Utilities.UploadFile(fThumb, @"products", image.ToLower());
@@ -153,41 +149,38 @@ namespace SaleShop.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    product.ProductName = Utilities.ToTitleCase(product.ProductName);
-                    if (fThumb != null)
-                    {
-                        string extension = Path.GetExtension(fThumb.FileName);
-                        string image = Utilities.SEOUrl(product.ProductName) + extension;
-                        product.Thumb = await Utilities.UploadFile(fThumb, @"products", image.ToLower());
-                    }
-                    //if (string.IsNullOrEmpty(product.Thumb)) product.Thumb = "default.jpg";
-                    product.Alias = Utilities.SEOUrl(product.ProductName);
-                    product.DateModified = DateTime.Now;
 
-                    _context.Update(product);
-                    await _context.SaveChangesAsync();
-                    _notyfService.Success("Cập nhật thành công");
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ProductExists(product.ProductID))
-                    {
-                        return NotFound();
-                        
-                    }
-                    else
-                    {
-   
-                        throw;
-                    }
-                }
-                
-                return RedirectToAction(nameof(Index));
+            try
+            {
+
+                product.ProductName = Utilities.ToTitleCase(product.ProductName);
+
+                if (string.IsNullOrEmpty(product.Thumb)) product.Thumb = "default.jpg";
+                product.Alias = Utilities.SEOUrl(product.ProductName);
+                product.DateModified = DateTime.Now;
+
+                _context.Update(product);
+                await _context.SaveChangesAsync();
+                _notyfService.Success("Cập nhật thành công");
+
             }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!ProductExists(product.ProductID))
+                {
+                    return NotFound();
+
+                }
+                else
+                {
+
+                    throw;
+                }
+            }
+
+            return RedirectToAction(nameof(Index));
+
+
             ViewData["DanhMuc"] = new SelectList(_context.Categories, "CatId", "CatName", product.CatID);
             return View(product);
         }
@@ -227,14 +220,14 @@ namespace SaleShop.Areas.Admin.Controllers
                 _context.Products.Remove(product);
                 _notyfService.Success("Xóa thành công");
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool ProductExists(int id)
         {
-          return _context.Products.Any(e => e.ProductID == id);
+            return _context.Products.Any(e => e.ProductID == id);
         }
     }
 }

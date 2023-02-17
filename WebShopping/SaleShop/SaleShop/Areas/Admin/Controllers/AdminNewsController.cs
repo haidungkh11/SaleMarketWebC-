@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using AspNetCoreHero.ToastNotification.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PagedList.Core;
+using SaleShop.Helpper;
 using SaleShop.Models;
 
 namespace SaleShop.Areas.Admin.Controllers
@@ -15,9 +13,12 @@ namespace SaleShop.Areas.Admin.Controllers
     {
         private readonly dbMarketsContext _context;
 
-        public AdminNewsController(dbMarketsContext context)
+        public INotyfService _notyfService { get; }
+        public AdminNewsController(dbMarketsContext context, INotyfService notyfService)
         {
             _context = context;
+            _notyfService = notyfService;
+
         }
 
         // GET: Admin/AdminNews
@@ -76,15 +77,26 @@ namespace SaleShop.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("PostId,Title,Scontents,Contents,Thumb,Published,Alias,CreatedDate,Author,AccountId,Tags,CatId,IsHot,IsNewfeed,MetaKey,MetaDesc,Views")] News news)
+        public async Task<IActionResult> Create([Bind("PostId,Title,Scontents,Contents,Thumb,Published,Alias,CreatedDate,Author,AccountId,Tags,CatId,IsHot,IsNewfeed,MetaKey,MetaDesc,Views")] News news, Microsoft.AspNetCore.Http.IFormFile fThumb)
         {
             if (ModelState.IsValid)
             {
+                if (fThumb != null)
+                {
+                    string extension = Path.GetExtension(fThumb.FileName);
+                    string imageName = Utilities.SEOUrl(news.Title) + extension;
+                    news.Thumb = await Utilities.UploadFile(fThumb, @"news", imageName.ToLower());
+                }
+                if (string.IsNullOrEmpty(news.Thumb)) news.Thumb = "default.jpg";
+                news.Alias = Utilities.SEOUrl(news.Title);
+                news.CreatedDate = DateTime.Now;
+
+
                 _context.Add(news);
                 await _context.SaveChangesAsync();
+                _notyfService.Success("Thêm mới thành công");
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AccountId"] = new SelectList(_context.Accounts, "AccountId", "AccountId", news.AccountId);
             return View(news);
         }
 
@@ -110,33 +122,40 @@ namespace SaleShop.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("PostId,Title,Scontents,Contents,Thumb,Published,Alias,CreatedDate,Author,AccountId,Tags,CatId,IsHot,IsNewfeed,MetaKey,MetaDesc,Views")] News news)
+        public async Task<IActionResult> Edit(int id, [Bind("PostId,Title,Scontents,Contents,Thumb,Published,Alias,CreatedDate,Author,AccountId,Tags,CatId,IsHot,IsNewfeed,MetaKey,MetaDesc,Views")] News news, Microsoft.AspNetCore.Http.IFormFile fThumb)
         {
             if (id != news.PostId)
             {
                 return NotFound();
             }
-
-            if (ModelState.IsValid)
+            try
             {
-                try
+                if (fThumb != null)
                 {
-                    _context.Update(news);
-                    await _context.SaveChangesAsync();
+                    string extension = Path.GetExtension(fThumb.FileName);
+                    string imageName = Utilities.SEOUrl(news.Title) + extension;
+                    news.Thumb = await Utilities.UploadFile(fThumb, @"news", imageName.ToLower());
                 }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!NewsExists(news.PostId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                if (string.IsNullOrEmpty(news.Thumb)) news.Thumb = "default.jpg";
+                news.Alias = Utilities.SEOUrl(news.Title);
+                news.CreatedDate = DateTime.Now;
+                _context.Update(news);
+                await _context.SaveChangesAsync();
+                _notyfService.Success("Edit successful");
             }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!NewsExists(news.PostId))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return RedirectToAction(nameof(Index));
+
             ViewData["AccountId"] = new SelectList(_context.Accounts, "AccountId", "AccountId", news.AccountId);
             return View(news);
         }
@@ -174,14 +193,15 @@ namespace SaleShop.Areas.Admin.Controllers
             {
                 _context.News.Remove(news);
             }
-            
+
             await _context.SaveChangesAsync();
+            _notyfService.Success("Delete successful");
             return RedirectToAction(nameof(Index));
         }
 
         private bool NewsExists(int id)
         {
-          return _context.News.Any(e => e.PostId == id);
+            return _context.News.Any(e => e.PostId == id);
         }
     }
 }

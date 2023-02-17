@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using AspNetCoreHero.ToastNotification.Abstractions;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PagedList.Core;
+using SaleShop.Helpper;
 using SaleShop.Models;
 
 namespace SaleShop.Areas.Admin.Controllers
@@ -14,10 +11,11 @@ namespace SaleShop.Areas.Admin.Controllers
     public class AdminPagesController : Controller
     {
         private readonly dbMarketsContext _context;
-
-        public AdminPagesController(dbMarketsContext context)
+        public INotyfService _notyfService { get; }
+        public AdminPagesController(dbMarketsContext context, INotyfService notyfService)
         {
             _context = context;
+            _notyfService = notyfService;
         }
 
         // GET: Admin/AdminPages
@@ -63,12 +61,21 @@ namespace SaleShop.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("PageId,PageName,Contents,Thumb,Published,Title,MetaDesc,MetaKey,Alias,CreatedDate,Ordering")] Page page)
+        public async Task<IActionResult> Create([Bind("PageId,PageName,Contents,Thumb,Published,Title,MetaDesc,MetaKey,Alias,CreatedDate,Ordering")] Page page, Microsoft.AspNetCore.Http.IFormFile fThumb)
         {
             if (ModelState.IsValid)
             {
+                page.PageName = Utilities.ToTitleCase(page.PageName);
+                if (fThumb != null)
+                {
+                    string extension = Path.GetExtension(fThumb.FileName);
+                    string image = Utilities.SEOUrl(page.PageName) + extension;
+                    page.Thumb = await Utilities.UploadFile(fThumb, @"pages", image.ToLower());
+                }
+                page.Alias = Utilities.SEOUrl(page.PageName);
                 _context.Add(page);
                 await _context.SaveChangesAsync();
+                _notyfService.Success("Create successful");
                 return RedirectToAction(nameof(Index));
             }
             return View(page);
@@ -95,33 +102,37 @@ namespace SaleShop.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("PageId,PageName,Contents,Thumb,Published,Title,MetaDesc,MetaKey,Alias,CreatedDate,Ordering")] Page page)
+        public async Task<IActionResult> Edit(int id, [Bind("PageId,PageName,Contents,Thumb,Published,Title,MetaDesc,MetaKey,Alias,CreatedDate,Ordering")] Page page, Microsoft.AspNetCore.Http.IFormFile fThumb)
         {
             if (id != page.PageId)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+
+            try
             {
-                try
-                {
-                    _context.Update(page);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!PageExists(page.PageId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                page.PageName = Utilities.ToTitleCase(page.PageName);
+
+                if (string.IsNullOrEmpty(page.Thumb)) page.Thumb = "default.jpg";
+                page.Alias = Utilities.SEOUrl(page.PageName);
+                _context.Update(page);
+                await _context.SaveChangesAsync();
+                _notyfService.Success("Fix successful");
             }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!PageExists(page.PageId))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return RedirectToAction(nameof(Index));
+
             return View(page);
         }
 
@@ -157,14 +168,15 @@ namespace SaleShop.Areas.Admin.Controllers
             {
                 _context.Pages.Remove(page);
             }
-            
+
             await _context.SaveChangesAsync();
+            _notyfService.Success("Delete successful");
             return RedirectToAction(nameof(Index));
         }
 
         private bool PageExists(int id)
         {
-          return _context.Pages.Any(e => e.PageId == id);
+            return _context.Pages.Any(e => e.PageId == id);
         }
     }
 }

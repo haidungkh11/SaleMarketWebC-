@@ -1,4 +1,4 @@
-﻿@model PagedList.Core.IPagedList<SaleShop.Models.Product>
+﻿ @model PagedList.Core.IPagedList<SaleShop.Models.Product>
 @using PagedList.Core.Mvc
 @{
     int CurrentPage = ViewBag.CurrentPage;
@@ -102,7 +102,7 @@
             </table>
             <div aria-label="Page navigation example">
                 <ul class="pagination">
-                    <pager class="pager-container" list="@Model" asp-area="Admin" asp-controller="AdminProducts" asp-route-CatID="@ViewBag.CurrentCateID" asp-action="Index" />
+                    <pager class="pager-container" list="@Model" asp-area="Admin" asp-controller="AdminProducts" asp-route-CatID="@ViewBag.CurrentPage" asp-action="Index" />
                 </ul>
             </div>
         </div>
@@ -139,21 +139,28 @@
 
             $("#keyword").keyup(function () {
                 var strkeyword = $('#keyword').val();
-                $.ajax({
-                    url: '/Admin/Search/FindProduct/',
-                    datatype: "json",
-                    type: "POST",
-                    data: { keyword: strkeyword },
-                    async: true,
-                    success: function (results) {
-                        $("#records_table").html("");
-                        $("#records_table").html(results);
-                    },
-                    error: function (xhr) {
-                        alert('error');
+                    if(strkeyword != ""){
+                    $.ajax({
+                        url: '/Admin/Search/FindProduct/',
+                        datatype: "json",
+                        type: "POST",
+                        data: { keyword: strkeyword },
+                        async: true,
+                        success: function (results) {
+                            $("#records_table").html("");
+                            $("#records_table").html(results);
+                        },
+                        error: function (xhr) {
+                            alert('error');
+                        }
+                    });
                     }
-                });
+                    else{
+                    window.location.href = "/Admin/AdminProducts/Index";
+                    }
+                
             });
+            
         });
     </script>
 

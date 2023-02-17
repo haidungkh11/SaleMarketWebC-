@@ -64,7 +64,6 @@ namespace SaleShop.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("CatId,CatName,Description,ParentId,Levels,Ordering,Published,Thumb,Title,Alias,MetaDesc,MetaKey,Cover,SchemaMarkup")] Category category, Microsoft.AspNetCore.Http.IFormFile fThumb)
         {
-
             if (ModelState.IsValid)
             {
                 //Xu ly Thumb
@@ -112,34 +111,29 @@ namespace SaleShop.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+
+            try
             {
-                try
-                {
-                    if (fThumb != null)
-                    {
-                        string extension = Path.GetExtension(fThumb.FileName);
-                        string imageName = Utilities.SEOUrl(category.CatName) + extension;
-                        category.Thumb = await Utilities.UploadFile(fThumb, @"category", imageName.ToLower());
-                    }
-                    if (string.IsNullOrEmpty(category.Thumb)) category.Thumb = "default.jpg";
-                    _context.Update(category);
-                    await _context.SaveChangesAsync();
-                    _notyfService.Success("Chỉnh sửa thành công");
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CategoryExists(category.CatId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                category.CatName = Utilities.ToTitleCase(category.CatName);
+
+                if (string.IsNullOrEmpty(category.Thumb)) category.Thumb = "default.jpg";
+                _context.Update(category);
+                await _context.SaveChangesAsync();
+                _notyfService.Success("Chỉnh sửa thành công");
             }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!CategoryExists(category.CatId))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return RedirectToAction(nameof(Index));
+
             return View(category);
         }
 
@@ -174,6 +168,7 @@ namespace SaleShop.Areas.Admin.Controllers
             if (category != null)
             {
                 _context.Categories.Remove(category);
+                _notyfService.Success("Xóa thành công");
             }
 
             await _context.SaveChangesAsync();
