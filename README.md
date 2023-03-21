@@ -1,7 +1,7 @@
 # SaleMarketWebC-
 The project is to make a sales website, including the Admin interface and the user interface.
 Use knowledge:
-Dotnet core MVC
+ASP.Net core MVC
 Razor Pages
 Jquery
 Bootstrap
