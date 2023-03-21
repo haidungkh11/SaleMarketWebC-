@@ -25,16 +25,7 @@ namespace SaleShop.Areas.Admin.Controllers
         public IActionResult Index(int? page)
         {
             var collection = _context.News.AsNoTracking().ToList();
-            foreach (var item in collection)
-            {
-                if (item.CreatedDate == null)
-                {
-                    item.CreatedDate = DateTime.Now;
-                    _context.Update(item);
-                    _context.SaveChanges();
-                }
-            }
-
+            
             var pageNumber = page == null || page <= 0 ? 1 : page.Value;
             var pageSize = 10;
             var lsTinDangs = _context.News
@@ -130,6 +121,7 @@ namespace SaleShop.Areas.Admin.Controllers
             }
             try
             {
+                news.Title = Utilities.ToTitleCase(news.Title);
                 if (fThumb != null)
                 {
                     string extension = Path.GetExtension(fThumb.FileName);
@@ -155,6 +147,7 @@ namespace SaleShop.Areas.Admin.Controllers
                 }
             }
             return RedirectToAction(nameof(Index));
+
 
             ViewData["AccountId"] = new SelectList(_context.Accounts, "AccountId", "AccountId", news.AccountId);
             return View(news);

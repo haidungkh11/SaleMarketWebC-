@@ -4,6 +4,7 @@
     ViewData["Title"] = Model.Title;
     Layout = "~/Views/Shared/_Layout.cshtml";
     List<Product> lsProducts = ViewBag.SanPham;
+   
 }
 
 <main class="main-content">
@@ -37,18 +38,18 @@
                                     </a>
                                 </div>
                                 <div class="swiper-slide">
-                                    <a href="~/assets/images/product/large-size/2-2-555x645.jpg" class="single-img gallery-popup">
-                                        <img class="img-full" src="~/assets/images/product/large-size/2-2-555x645.jpg" alt="Product Image">
+                                    <a href="~/images/products/@Model.Thumb" class="single-img gallery-popup">
+                                        <img class="img-full" src="~/images/products/@Model.Thumb" alt="Product Image">
                                     </a>
                                 </div>
                                 <div class="swiper-slide">
-                                    <a href="~/assets/images/product/large-size/2-3-555x645.jpg" class="single-img gallery-popup">
-                                        <img class="img-full" src="~/assets/images/product/large-size/2-3-555x645.jpg" alt="Product Image">
+                                    <a href="~/images/products/@Model.Thumb" class="single-img gallery-popup">
+                                        <img class="img-full" src="~/images/products/@Model.Thumb" alt="Product Image">
                                     </a>
                                 </div>
                                 <div class="swiper-slide">
-                                    <a href="~/assets/images/product/large-size/2-4-555x645.jpg" class="single-img gallery-popup">
-                                        <img class="img-full" src="~/assets/images/product/large-size/2-4-555x645.jpg" alt="Product Image">
+                                    <a href="~/images/products/@Model.Thumb" class="single-img gallery-popup">
+                                        <img class="img-full" src="~/images/products/@Model.Thumb" alt="Product Image">
                                     </a>
                                 </div>
                             </div>
@@ -63,8 +64,8 @@
                             <div class="single-product-content">
                                 <h2 class="title">@Model.ProductName</h2>
                                 <div class="price-box pb-1">
-                                    @*<span class="new-price text-danger">@Model.Price.Value.ToString("#,##0") VNĐ</span>*@
-                                    <span class="old-price text-primary">$90.00</span>
+                                    <span class="new-price text-danger">@Model.Price.Value.ToString("#,##0") VNĐ</span>
+                                    <span class="old-price text-primary">$90.00</span> 
                                 </div>
                                 <div class="rating-box-wrap pb-7">
                                     <div class="rating-box">
@@ -110,16 +111,16 @@
                             <div class="swiper-container single-product-thumbs">
                                 <div class="swiper-wrapper">
                                     <a href="javascript:void(0)" class="swiper-slide">
-                                        <img class="img-full" src="~/assets/images/product/large-size/2-1-555x645.jpg" alt="Product Thumnail">
+                                        <img class="img-full" src="~/images/products/@Model.Thumb" alt="Product Thumnail">
                                     </a>
                                     <a href="javascript:void(0)" class="swiper-slide">
-                                        <img class="img-full" src="~/assets/images/product/large-size/2-2-555x645.jpg" alt="Product Thumnail">
+                                        <img class="img-full" src="~/images/products/@Model.Thumb" alt="Product Thumnail">
                                     </a>
                                     <a href="javascript:void(0)" class="swiper-slide">
-                                        <img class="img-full" src="~/assets/images/product/large-size/2-3-555x645.jpg" alt="Product Thumnail">
+                                        <img class="img-full" src="~/images/products/@Model.Thumb" alt="Product Thumnail">
                                     </a>
                                     <a href="javascript:void(0)" class="swiper-slide">
-                                        <img class="img-full" src="~/assets/images/product/large-size/2-4-555x645.jpg" alt="Product Thumnail">
+                                        <img class="img-full" src="~/images/products/@Model.Thumb" alt="Product Thumnail">
                                     </a>
                                 </div>
                             </div>
@@ -154,7 +155,7 @@
                         <div class="tab-pane fade show active" id="description" role="tabpanel" aria-labelledby="description-tab">
                             <div class="product-description-body">
                                 <p class="short-desc mb-0">
-                                    @*@Html.Raw(Model.Description)*@
+                                    @Html.Raw(Model.ShortDescription)
                                 </p>
                             </div>
                         </div>
@@ -353,7 +354,7 @@
                                                 <div class="product-content texx">
                                                     <a class="product-name" href="@url">@item.ProductName</a>
                                                     <div class="price-box pb-1">
-                                                       @* <span class="new-price">@item.Price.Value.ToString("#,##0") VNĐ</span>*@
+                                                        <span class="new-price">@item.Price.Value.ToString("#,##0") VNĐ</span>
                                                     </div>
                                                     <div class="rating-box">
                                                         <ul>
@@ -387,7 +388,7 @@
         $(document).ready(function () {
             $(function () {
                 $(".add-to-cart").click(function () {
-                    var productid = $('#ProductId').val();
+                    var productid = $('#ProductID').val();
                     var soLuong = $('#txtsoLuong').val();
                     $.ajax({
                         url: '/api/cart/add',
@@ -413,25 +414,25 @@
                     });
                 });
 
-        @*$(".removecart").click(function () {
+        $(".removecart").click(function () {
                 var productid = $(this).attr("data-productid");
                 $.ajax({
-                url: "api/cart/remove",
-                type: "POST",
-                dataType: "JSON",
-                data: { productID: productid },
-                success: function (result) {
-                if (result.success) {
-                loadHeaderCart();//Reload lai gio hang
-                location.reload();
-                }
-                },
-                error: function (rs) {
-                alert("Remove Cart Error !")
-                }
+                    url: "api/cart/remove",
+                    type: "POST",
+                    dataType: "JSON",
+                    data: { productID: productid },
+                    success: function (result) {
+                        if (result.success) {
+                            loadHeaderCart();//Reload lai gio hang
+                            location.reload();
+                        }
+                    },
+                     error: function (rs) {
+                     alert("Remove Cart Error !")
+                    }
                 });
-                });*@
-                });
+            });
+        });
             function loadHeaderCart() {
                 $('#miniCart').load("/AjaxContent/HeaderCart");
                 $('#numberCart').load("/AjaxContent/NumberCart");

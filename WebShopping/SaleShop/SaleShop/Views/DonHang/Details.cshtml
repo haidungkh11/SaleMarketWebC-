@@ -1,0 +1,47 @@
+﻿@model SaleShop.ModelViews.XemDonHang
+@{
+    List<int> tonggia = new List<int>();
+}
+<h3>Thông tin đơn hàng: #@Model.DonHang.OrderID</h3>
+<br />
+<p>Ngày đặt hàng: @Model.DonHang.OrderDate</p>
+<p>Trạng thái đơn hàng: @Model.DonHang.TransactStatus.Status</p>
+
+<p>Ngày ship hàng: @Model.DonHang.ShipDate</p>
+
+<div class="table-responsive">
+    <table class="table table-bordered table-hover">
+        <tbody>
+            <tr>
+                <th>#</th>
+                <th>Sản phẩm</th>
+                <th>Số lượng</th>
+                <th>Đơn giá</th>
+                <th>Thành tiền</th>
+            </tr>
+
+            @foreach (var item in Model.ChiTietDonHang)
+            {
+                var totalMoney = item.Price.Value * item.Amount;
+                <tr>
+                    <td>@item.ProductID</td>
+                    <td>@item.Product.ProductName</td>
+                    <td>@item.Amount</td>
+                    <td>@item.Price.Value.ToString("#,##0") VNĐ</td>
+                    <td>@totalMoney.Value.ToString("#,##0") VNĐ</td>
+                </tr>
+                tonggia.Add(Convert.ToInt32(totalMoney));
+
+            }
+            <tr>
+                <th>Tổng</th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th>@tonggia.Sum().ToString("#,##0") VNĐ</th>
+            </tr>
+           
+            
+        </tbody>
+    </table>
+</div>

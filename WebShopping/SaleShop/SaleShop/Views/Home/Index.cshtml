@@ -1,4 +1,5 @@
-﻿@{
+﻿
+@{
     ViewData["Title"] = "Trang chủ";
     Layout = "~/Views/Shared/_Layout.cshtml";
     List<Product> allProduct = ViewBag.AllProducts;
@@ -102,13 +103,13 @@
 </div>
 <!-- Slider Area End Here -->
 <!-- Begin Shipping Area -->
-<div class="shipping-area section-space-top-100">
+<div class="shipping-area section-space-y-axis-100" data-bg-image="/assets/images/banner/gonhat.png">
     <div class="container">
         <div class="row">
             <div class="col-lg-4 col-md-6">
                 <div class="shipping-item">
                     <div class="shipping-img">
-                        <img src="/assets/images/shipping/icon/plane.png" alt="Shipping Icon">
+                        <img width="50" height="50" src="~/assets/images/privateicon/delivery-truck.png" alt="Shipping Icon">
                     </div>
                     <div class="shipping-content">
                         <h5 class="title">Giao hàng miễn phí</h5>
@@ -119,18 +120,18 @@
             <div class="col-lg-4 col-md-6 pt-6 pt-md-0">
                 <div class="shipping-item">
                     <div class="shipping-img">
-                        <img src="/assets/images/shipping/icon/earphones.png" alt="Shipping Icon">
+                        <img width="50" height="50" src="/assets/images/privateicon/phucvu24.png" alt="Shipping Icon">
                     </div>
                     <div class="shipping-content">
                         <h5 class="title">Hỗ trợ 24/7</h5>
-                        <p class="short-desc mb-0">Hotline: <strong>0963102916</strong></p>
+                        <p class="short-desc mb-0">Hotline: <strong>0889668339</strong></p>
                     </div>
                 </div>
             </div>
             <div class="col-lg-4 col-md-6 pt-6 pt-lg-0">
                 <div class="shipping-item">
                     <div class="shipping-img">
-                        <img src="/assets/images/shipping/icon/shield.png" alt="Shipping Icon">
+                        <img width="50" height="50" src="/assets/images/privateicon/giolamviec.png" alt="Shipping Icon">
                     </div>
                     <div class="shipping-content">
                         <h5 class="title">Giờ làm việc</h5>
@@ -143,7 +144,7 @@
 </div>
 <!-- Shipping Area End Here -->
 <!-- Begin Product Area -->
-@*<div class="product-area section-space-top-100">
+<div class="product-area section-space-top-100">
     <div class="container">
         <div class="row">
             <div class="col-lg-12">
@@ -151,40 +152,22 @@
                     <li class="nav-item" role="presentation">
                         <a class="active" id="all-items-tab" data-bs-toggle="tab" href="#all-items" role="tab" aria-controls="all-items" aria-selected="true">
                             <div class="product-tab-icon">
-                                <img src="/assets/images/product/icon/1.png" alt="Product Icon">
+                               <img width="50" height="50" src="~/assets/images/privateicon/giohang.jpg" alt="Buying Icon">
                             </div>
-                            Tất cả sản phẩm
+                            Một số sản phẩm
                         </a>
                     </li>
-                    @foreach (var item in Model.Products)
-                    {
-                        <li class="nav-item" role="presentation">
-                            <a id="fresh-fruits-tab" data-bs-toggle="tab" href="#@item.category.Alias" role="tab" aria-controls="fresh-fruits" aria-selected="false">
-                                <div class="product-tab-icon">
-                                    <img style="width:80%;height:auto" src="~/images/category/@item.category.Thumb" alt="@item.category.Title">
-                                </div>
-                                @item.category.CatName
-                            </a>
-                        </li>
-                    }
+                   
                 </ul>
                 <div class="tab-content" id="myTabContent">
                     <div class="tab-pane fade show active" id="all-items" role="tabpanel" aria-labelledby="all-items-tab">
                         @await Html.PartialAsync("_ListProductPartialView", allProduct)
-                    </div>
-                    @foreach (var item in Model.Products)
-                    {
-                        <div class="tab-pane fade" id="@item.category.Alias" role="tabpanel" aria-labelledby="fresh-fruits-tab">
-                            @await Html.PartialAsync("_ListProductPartialView", item.lsProducts)
-                        </div>
-                    }
-
-
+                    </div>                 
                 </div>
             </div>
         </div>
     </div>
-</div>*@
+</div>
 
 <!-- Product Area End Here -->
 
@@ -231,7 +214,7 @@
 
 
 <!-- Begin Blog Area -->
-@*@if (Model.TinTucs != null && Model.TinTucs.Count() > 0)
+@if (Model.TinTucs != null)
 {
     <div class="blog-area section-space-y-axis-100">
         <div class="container">
@@ -253,26 +236,29 @@
                                                 <img width="200" height="200" class="img-full" src="~/images/news/@item.Thumb" alt="@item.Title">
                                             </a>
                                         </div>
-                                        <div class="blog-content">
+                                        <div class="blog-content">                                          
+                                                
+                                                    <div class="date"><i class="fa fa-calendar-o me-2"></i>@item.CreatedDate</div>
                                             <div class="blog-meta text-dim-gray pb-3">
-                                                <ul>
-                                                    <li class="date"><i class="fa fa-calendar-o me-2"></i>@item.CreatedDate</li>
+                                                 <ul>
                                                     <li>
                                                         <span class="comments me-3">
                                                             <a href="javascript:void(0)">2 Comments</a>
                                                         </span>
+                                                    </li>
+                                                    <li>
                                                         <span class="link-share">
                                                             <a href="javascript:void(0)">Chia sẻ</a>
                                                         </span>
                                                     </li>
                                                 </ul>
-                                            </div>
+                                      </div>
                                             <h5 class="title mb-4">
                                                 <a href="@url">@item.Title</a>
                                             </h5>
                                             <p class="short-desc mb-5">@item.Scontents</p>
                                             <div class="button-wrap">
-                                                <a class="btn btn-custom-size btn-dark btn-lg rounded-0" href="blog-detail-left-sidebar.html">Đọc thêm</a>
+                                                <a class="btn btn-custom-size btn-dark btn-lg rounded-0" href="@url">Đọc thêm</a>
                                             </div>
                                         </div>
                                     </div>
@@ -289,5 +275,6 @@
             </div>
         </div>
     </div>
-}*@
+}
+
 <script src="~/assets/js/main.js"></script>

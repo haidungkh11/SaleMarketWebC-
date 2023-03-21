@@ -148,14 +148,18 @@ namespace SaleShop.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-
-
             try
             {
-
                 product.ProductName = Utilities.ToTitleCase(product.ProductName);
-
+                if (fThumb != null)
+                {
+                    string extension = Path.GetExtension(fThumb.FileName);
+                    string imageName = Utilities.SEOUrl(product.Title) + extension;
+                    product.Thumb = await Utilities.UploadFile(fThumb, @"products", imageName.ToLower());
+                }
                 if (string.IsNullOrEmpty(product.Thumb)) product.Thumb = "default.jpg";
+
+                
                 product.Alias = Utilities.SEOUrl(product.ProductName);
                 product.DateModified = DateTime.Now;
 
@@ -173,16 +177,16 @@ namespace SaleShop.Areas.Admin.Controllers
                 }
                 else
                 {
-
-                    throw;
+                   return View(product);
                 }
+                //return RedirectToAction(nameof(Index));
             }
-
+            ViewData["DanhMuc"] = new SelectList(_context.Categories, "CatId", "CatName", product.CatID);
             return RedirectToAction(nameof(Index));
 
 
-            ViewData["DanhMuc"] = new SelectList(_context.Categories, "CatId", "CatName", product.CatID);
-            return View(product);
+            
+            
         }
 
 

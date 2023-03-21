@@ -1,25 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using AspNetCoreHero.ToastNotification.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using SaleShop.Areas.Admin.Models;
 using SaleShop.Models;
+using System.Data;
+
 
 namespace SaleShop.Areas.Admin.Controllers
 {
     [Area("Admin")]
+
+
     public class AdminAccountsController : Controller
     {
         private readonly dbMarketsContext _context;
+        public INotyfService _notyfService { get; }
 
-        public AdminAccountsController(dbMarketsContext context)
+        public AdminAccountsController(dbMarketsContext context, INotyfService notyfService)
         {
             _context = context;
+            _notyfService = notyfService;
         }
 
-        // GET: Admin/Accounts
+        // GET: Admin/AdminAccounts
         public async Task<IActionResult> Index()
         {
             ViewData["Quyentruycap"] = new SelectList(_context.Roles, "RoleID", "Description");
@@ -31,7 +35,7 @@ namespace SaleShop.Areas.Admin.Controllers
             return View(await dbMarketsContext.ToListAsync());
         }
 
-        // GET: Admin/Accounts/Details/5
+        // GET: Admin/AdminAccounts/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Accounts == null)
@@ -50,10 +54,10 @@ namespace SaleShop.Areas.Admin.Controllers
             return View(account);
         }
 
-        // GET: Admin/Accounts/Create
+        // GET: Admin/AdminAccounts/Create
         public IActionResult Create()
         {
-            ViewData["RoleId"] = new SelectList(_context.Roles, "RoleID", "RoleID");
+            ViewData["Quyentruycap"] = new SelectList(_context.Roles, "RoleID", "RoleName");
             return View();
         }
 
@@ -68,13 +72,53 @@ namespace SaleShop.Areas.Admin.Controllers
             {
                 _context.Add(account);
                 await _context.SaveChangesAsync();
+                _notyfService.Success("Tạo mới tài khoản thành công");
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["RoleId"] = new SelectList(_context.Roles, "RoleID", "RoleID", account.RoleId);
+            ViewData["Quyentruycap"] = new SelectList(_context.Roles, "RoleID", "RoleName", account.RoleId);
             return View(account);
         }
+        public IActionResult ChangePassword()
+        {
+            ViewData["QuyenTruyCap"] = new SelectList(_context.Roles, "RoleId", "RoleName");
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
+        {
+            try
+            {
+                var taikhoanID = HttpContext.Session.GetString("AccountId");
+                if (taikhoanID == null)
+                {
+                    return RedirectToAction("AdminLogin", "Account", new { Area = "Admin" });
+                }
 
-        // GET: Admin/Accounts/Edit/5
+                var taikhoan = await _context.Accounts.FindAsync(Convert.ToInt32(taikhoanID));
+
+
+                if (model.PasswordNow.Trim() == taikhoan.Password)
+                {
+                    string passnew = model.Password.Trim();
+                    taikhoan.Password = passnew;
+                    _context.Update(taikhoan);
+                    await _context.SaveChangesAsync();
+                    _notyfService.Success("Đổi mật khẩu thành công");
+                    return RedirectToAction("AdminLogin", "Account", new { Area = "Admin" });
+                }
+
+            }
+            catch
+            {
+                _notyfService.Success("Thay đổi mật khẩu không thành công");
+                return RedirectToAction("AdminLogin", "Account", new { Area = "Admin" });
+            }
+            _notyfService.Success("Thay đổi mật khẩu không thành công");
+            return RedirectToAction("AdminLogin", "Account", new { Area = "Admin" });
+        }
+
+
+        // GET: Admin/AdminAccounts/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Accounts == null)
@@ -87,11 +131,11 @@ namespace SaleShop.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            ViewData["RoleId"] = new SelectList(_context.Roles, "RoleID", "RoleID", account.RoleId);
+            ViewData["Quyentruycap"] = new SelectList(_context.Roles, "RoleID", "RoleName", account.RoleId);
             return View(account);
         }
 
-        // POST: Admin/Accounts/Edit/5
+        // POST: Admin/AdminAccounts/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
@@ -123,14 +167,14 @@ namespace SaleShop.Areas.Admin.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["RoleId"] = new SelectList(_context.Roles, "RoleID", "RoleID", account.RoleId);
+            ViewData["Quyentruycap"] = new SelectList(_context.Roles, "RoleID", "RoleName", account.RoleId);
             return View(account);
         }
 
-        // GET: Admin/Accounts/Delete/5
+        // GET: Admin/AdminAccounts/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Accounts == null)
+            if (id == null)
             {
                 return NotFound();
             }
@@ -146,28 +190,25 @@ namespace SaleShop.Areas.Admin.Controllers
             return View(account);
         }
 
-        // POST: Admin/Accounts/Delete/5
+        // POST: Admin/AdminAccounts/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Accounts == null)
-            {
-                return Problem("Entity set 'dbMarketsContext.Accounts'  is null.");
-            }
+
             var account = await _context.Accounts.FindAsync(id);
             if (account != null)
             {
                 _context.Accounts.Remove(account);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool AccountExists(int id)
         {
-          return _context.Accounts.Any(e => e.AccountId == id);
+            return _context.Accounts.Any(e => e.AccountId == id);
         }
     }
 }

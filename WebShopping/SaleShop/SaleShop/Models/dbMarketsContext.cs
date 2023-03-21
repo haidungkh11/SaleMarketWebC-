@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SaleShop.ModelViews;
+using SaleShop.Areas.Admin.Models;
 
 namespace SaleShop.Models
 {
@@ -195,7 +197,7 @@ namespace SaleShop.Models
                 entity.HasOne(d => d.TransactStatus)
                     .WithMany(p => p.Orders)
                     .HasForeignKey(d => d.TransactStatusId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_Orders_TransactStatus");
             });
 
@@ -352,6 +354,7 @@ namespace SaleShop.Models
 
             modelBuilder.Entity<TransactStatus>(entity =>
             {
+                entity.HasKey(e => e.TransactStatusID);
                 entity.ToTable("TransactStatus");
 
                 entity.Property(e => e.TransactStatusID).HasColumnName("TransactStatusID");
@@ -362,6 +365,14 @@ namespace SaleShop.Models
             OnModelCreatingPartial(modelBuilder);
         }
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+        public DbSet<SaleShop.ModelViews.RegisterViewModel> RegisterViewModel { get; set; }
+        public DbSet<SaleShop.ModelViews.LoginViewModel> LoginViewModel { get; set; }
+        public DbSet<SaleShop.ModelViews.CartItem> CartItem { get; set; }
+        public DbSet<SaleShop.ModelViews.MuaHangVM> MuaHangVM { get; set; }
+        public DbSet<SaleShop.ModelViews.MuaHangSuccessVM> MuaHangSuccessVM { get; set; }
+        public DbSet<SaleShop.ModelViews.XemDonHang> XemDonHang { get; set; }
+        public DbSet<SaleShop.Areas.Admin.Models.LoginViewModel>? LoginViewModel_1 { get; set; }
+        public DbSet<SaleShop.Areas.Admin.Models.ChangePasswordViewModel>? ChangePasswordViewModel { get; set; }
 
     }
 }

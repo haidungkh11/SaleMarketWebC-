@@ -1,4 +1,5 @@
-﻿<header class="main-header_area position-relative">
+﻿
+<header class="main-header_area position-relative">
     <div class="header-top border-bottom d-none d-md-block">
         <div class="container">
             <div class="row align-items-center">
@@ -18,7 +19,7 @@
                             <li>
                                 <i class="fa fa-mobile" style=" font-size: 20px; display: inline-block; position: relative; transform: translateY(2px); "></i>
                                 Liên hệ nhanh
-                                <a href="tel:0963102916">096.310.2916</a>
+                                <a href="tel:0889668339">0889.668.339</a>
                             </li>
                             <li>
 
@@ -30,7 +31,7 @@
                     <div class="header-top text-matterhorn">
                         <p class="shipping mb-0">
                             <i class="fa fa-map-marker" aria-hidden="true"></i>
-                            Địa chỉ:24/52 Yên Lạc, Hai Bà Trưng, Hà Nội
+                            Địa chỉ:81 Nguyễn Khuyến, Đống Đa, Hà Nội
                         </p>
                     </div>
                 </div>
@@ -52,29 +53,11 @@
                         </a>
                         <div class="header-search-area d-none d-lg-block">
                             <form class="header-searchbox">
-                                <input id="keyword" name="keyword" class="input-field" type="text" placeholder="Tìm kiếm sản phẩm">
+                                <input id="keyword_1" name="keyword_1" class="input-field" type="text" placeholder="Tìm kiếm sản phẩm">
                                 <button class="btn btn-outline-whisper btn-primary-hover" type="submit"><i class="pe-7s-search"></i></button>
                             </form>
                             <div id="records_table" class="results-box">
-                            </div>
-
-
-                            @*<div>
-                            <i class="prefix-icon anticon anticon-search opacity-04"></i>
-                            <input id="keyword" name="keyword" type="text" class="form-control" placeholder="Tìm kiếm sản phẩm">
-                            </div>
-                            <div class="table-responsive">
-                            <table class="table table-hover e-commerce-table">
-                            <tbody id="records_table">
-                            </tbody>
-                            </table>
-                            </div>*@
-
-
-
-
-
-
+                            </div>                          
                         </div>
                         <div class="header-right">
                             <ul>
@@ -106,7 +89,7 @@
                                     </a>
                                 </li>
                                 <li id="numberCart" class="minicart-wrap me-3 me-lg-0">
-                                    @*@await Component.InvokeAsync("NumberCart")*@
+                                    @await Component.InvokeAsync("NumberCart")
                                 </li>
                                 <li class="mobile-menu_wrap d-block d-lg-none">
                                     <a href="#mobileMenu" class="mobile-menu_btn toolbar-btn pl-0">
@@ -470,31 +453,39 @@
         </div>
     </div>
     <div class="offcanvas-minicart_wrapper" id="miniCart">
-        @*@await Component.InvokeAsync("HeaderCart")*@
+        @await Component.InvokeAsync("HeaderCart")
     </div>
     <div class="global-overlay"></div>
 </header>
-
 @section Scripts{
-    @*<script>*@
-    @*$(document).ready(function () {
-            $("#keyword").keyup(function () {
-            var strkeyword = $('#keyword').val();
-            $.ajax({
-                url: '/Search/FindProduct/',
-                datatype: "json",
-                type: "POST",
-                data: { keyword: strkeyword },
-                async: true,
-                success: function (results) {
-                    $("#records_table").html("");
-                    $("#records_table").html(results);
-                },
-                error: function (xhr) {
-                    alert('error');
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        
+        $("#keyword_1").keyup(function () {
+               debugger;
+                console.log("hellllllllllllllllllllllllllllllllo");
+                var strkeyword = $('#keyword_1').val();
+                if (strkeyword != "") {
+                    $.ajax({
+                        url: '/Search/FindProduct/',
+                        datatype: "json",
+                        type: "POST",
+                        data: { keyword: strkeyword },
+                        async: true,
+                        success: function (results) {
+                        $("#records_table").html("");
+                        $("#records_table").html(results);
+                        },
+                        error: function (xhr) {
+                            alert('error');
+                        }
+                    });
                 }
-            });
-        });
-        });*@
+                else {
+                window.location.href = "/Search/FindProduct/";
+                }
 
+            });
+    </script>
 }
+

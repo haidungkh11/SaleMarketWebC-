@@ -115,8 +115,16 @@ namespace SaleShop.Areas.Admin.Controllers
             try
             {
                 category.CatName = Utilities.ToTitleCase(category.CatName);
-
+                if (fThumb != null)
+                {
+                    string extension = Path.GetExtension(fThumb.FileName);
+                    string imageName = Utilities.SEOUrl(category.Title) + extension;
+                    category.Thumb = await Utilities.UploadFile(fThumb, @"category", imageName.ToLower());
+                }
                 if (string.IsNullOrEmpty(category.Thumb)) category.Thumb = "default.jpg";
+         
+                category.Alias = Utilities.SEOUrl(category.CatName);
+            
                 _context.Update(category);
                 await _context.SaveChangesAsync();
                 _notyfService.Success("Chỉnh sửa thành công");

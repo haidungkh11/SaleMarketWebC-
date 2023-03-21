@@ -18,7 +18,7 @@ namespace SaleShop.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .UseCollation("SQL_Latin1_General_CP1_CI_AS")
-                .HasAnnotation("ProductVersion", "6.0.13")
+                .HasAnnotation("ProductVersion", "6.0.14")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
@@ -509,11 +509,16 @@ namespace SaleShop.Migrations
                     b.Property<int?>("TotalMoney")
                         .HasColumnType("int");
 
+                    b.Property<int?>("XemDonHangDonhang")
+                        .HasColumnType("int");
+
                     b.HasKey("OrderDetailID");
 
                     b.HasIndex("OrderID");
 
                     b.HasIndex("ProductID");
+
+                    b.HasIndex("XemDonHangDonhang");
 
                     b.ToTable("OrderDetails");
                 });
@@ -721,6 +726,156 @@ namespace SaleShop.Migrations
                     b.ToTable("TransactStatus", (string)null);
                 });
 
+            modelBuilder.Entity("SaleShop.ModelViews.CartItem", b =>
+                {
+                    b.Property<int>("cartItemId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("cartItemId"), 1L, 1);
+
+                    b.Property<int>("ProductID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("amount")
+                        .HasColumnType("int");
+
+                    b.HasKey("cartItemId");
+
+                    b.HasIndex("ProductID");
+
+                    b.ToTable("CartItem");
+                });
+
+            modelBuilder.Entity("SaleShop.ModelViews.LoginViewModel", b =>
+                {
+                    b.Property<string>("UserName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("UserName");
+
+                    b.ToTable("LoginViewModel");
+                });
+
+            modelBuilder.Entity("SaleShop.ModelViews.MuaHangSuccessVM", b =>
+                {
+                    b.Property<int>("DonHangID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DonHangID"), 1L, 1);
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("DonHangID");
+
+                    b.ToTable("MuaHangSuccessVM");
+                });
+
+            modelBuilder.Entity("SaleShop.ModelViews.MuaHangVM", b =>
+                {
+                    b.Property<int>("CustomerId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CustomerId"), 1L, 1);
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Note")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PaymentID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("CustomerId");
+
+                    b.ToTable("MuaHangVM");
+                });
+
+            modelBuilder.Entity("SaleShop.ModelViews.RegisterViewModel", b =>
+                {
+                    b.Property<int>("CustomerId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CustomerId"), 1L, 1);
+
+                    b.Property<string>("ConfirmPassword")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasMaxLength(11)
+                        .HasColumnType("nvarchar(11)");
+
+                    b.HasKey("CustomerId");
+
+                    b.ToTable("RegisterViewModel");
+                });
+
+            modelBuilder.Entity("SaleShop.ModelViews.XemDonHang", b =>
+                {
+                    b.Property<int>("Donhang")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Donhang"), 1L, 1);
+
+                    b.Property<int>("DonHangOrderID")
+                        .HasColumnType("int");
+
+                    b.HasKey("Donhang");
+
+                    b.HasIndex("DonHangOrderID");
+
+                    b.ToTable("XemDonHang");
+                });
+
             modelBuilder.Entity("SaleShop.Models.Account", b =>
                 {
                     b.HasOne("SaleShop.Models.Role", "Role")
@@ -786,6 +941,7 @@ namespace SaleShop.Migrations
                     b.HasOne("SaleShop.Models.TransactStatus", "TransactStatus")
                         .WithMany("Orders")
                         .HasForeignKey("TransactStatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK_Orders_TransactStatus");
 
@@ -806,6 +962,10 @@ namespace SaleShop.Migrations
                         .HasForeignKey("ProductID")
                         .HasConstraintName("FK_OrderDetails_Products");
 
+                    b.HasOne("SaleShop.ModelViews.XemDonHang", null)
+                        .WithMany("ChiTietDonHang")
+                        .HasForeignKey("XemDonHangDonhang");
+
                     b.Navigation("Order");
 
                     b.Navigation("Product");
@@ -819,6 +979,28 @@ namespace SaleShop.Migrations
                         .HasConstraintName("FK_Products_Categories");
 
                     b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("SaleShop.ModelViews.CartItem", b =>
+                {
+                    b.HasOne("SaleShop.Models.Product", "product")
+                        .WithMany()
+                        .HasForeignKey("ProductID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("product");
+                });
+
+            modelBuilder.Entity("SaleShop.ModelViews.XemDonHang", b =>
+                {
+                    b.HasOne("SaleShop.Models.Order", "DonHang")
+                        .WithMany()
+                        .HasForeignKey("DonHangOrderID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DonHang");
                 });
 
             modelBuilder.Entity("SaleShop.Models.Attribute", b =>
@@ -856,6 +1038,11 @@ namespace SaleShop.Migrations
             modelBuilder.Entity("SaleShop.Models.TransactStatus", b =>
                 {
                     b.Navigation("Orders");
+                });
+
+            modelBuilder.Entity("SaleShop.ModelViews.XemDonHang", b =>
+                {
+                    b.Navigation("ChiTietDonHang");
                 });
 #pragma warning restore 612, 618
         }

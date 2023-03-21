@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using PagedList.Core;
 using SaleShop.Models;
+using System.Runtime.CompilerServices;
 
 namespace SaleShop.Controllers
 {
@@ -17,6 +18,8 @@ namespace SaleShop.Controllers
         {
             try
             {
+                var danhmuc = _context.Categories.AsNoTracking().ToList();
+                
                 var pageNumber = page == null || page <= 0 ? 1 : page.Value;
                 var pageSize = 10;
                 var lsTinDangs = _context.Products
@@ -25,6 +28,7 @@ namespace SaleShop.Controllers
                 PagedList<Product> models = new PagedList<Product>(lsTinDangs, pageNumber, pageSize);
 
                 ViewBag.CurrentPage = pageNumber;
+                ViewBag.CurrentCat = danhmuc;
                 return View(models);
             }
             catch
@@ -39,9 +43,10 @@ namespace SaleShop.Controllers
         {
             try
             {
+                
                 var pageSize = 10;
                 var danhmuc = _context.Categories.AsNoTracking().SingleOrDefault(x => x.Alias == Alias);
-
+                var danhmuc2 = _context.Categories.AsNoTracking().Where(x => x.Alias != Alias).ToList();
                 var lsTinDangs = _context.Products
                     .AsNoTracking()
                     .Where(x => x.CatID == danhmuc.CatId)
@@ -49,6 +54,7 @@ namespace SaleShop.Controllers
                 PagedList<Product> models = new PagedList<Product>(lsTinDangs, page, pageSize);
                 ViewBag.CurrentPage = page;
                 ViewBag.CurrentCat = danhmuc;
+                ViewBag.CurrentAlias = danhmuc2;
                 return View(models);
             }
             catch
@@ -58,6 +64,7 @@ namespace SaleShop.Controllers
 
 
         }
+        [Route("/{Alias}-{id}.html", Name = ("ProductDetails"))]
         public IActionResult Detail(int id)
         {
             try
@@ -73,7 +80,9 @@ namespace SaleShop.Controllers
                     .Take(4)
                     .OrderByDescending(x => x.DateCreated)
                     .ToList();
+                
                 ViewBag.SanPham = lsProduct;
+               
                 return View(product);
             }
             catch

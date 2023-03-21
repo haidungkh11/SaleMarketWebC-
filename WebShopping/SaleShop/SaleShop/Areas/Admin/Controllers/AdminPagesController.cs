@@ -73,6 +73,7 @@ namespace SaleShop.Areas.Admin.Controllers
                     page.Thumb = await Utilities.UploadFile(fThumb, @"pages", image.ToLower());
                 }
                 page.Alias = Utilities.SEOUrl(page.PageName);
+                page.CreatedDate = DateTime.Now;
                 _context.Add(page);
                 await _context.SaveChangesAsync();
                 _notyfService.Success("Create successful");
@@ -113,9 +114,16 @@ namespace SaleShop.Areas.Admin.Controllers
             try
             {
                 page.PageName = Utilities.ToTitleCase(page.PageName);
+                if (fThumb != null)
+                {
+                    string extension = Path.GetExtension(fThumb.FileName);
+                    string imageName = Utilities.SEOUrl(page.Title) + extension;
+                    page.Thumb = await Utilities.UploadFile(fThumb, @"news", imageName.ToLower());
+                }
 
                 if (string.IsNullOrEmpty(page.Thumb)) page.Thumb = "default.jpg";
                 page.Alias = Utilities.SEOUrl(page.PageName);
+                page.CreatedDate = DateTime.Now;
                 _context.Update(page);
                 await _context.SaveChangesAsync();
                 _notyfService.Success("Fix successful");

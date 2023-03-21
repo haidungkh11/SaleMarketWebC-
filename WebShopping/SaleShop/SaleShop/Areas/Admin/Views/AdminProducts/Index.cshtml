@@ -111,11 +111,12 @@
 
 @section Scripts{
     <script>
-        $(document).ready(function () {
+        $(document).ready(function () {           
             jQuery("#txtCatID").change(function () {
+                debugger;
                 var catID = jQuery(this).children(":selected").attr("value");
                 catID = parseFloat(catID);
-                $('#txtCatID option')
+                $('#txtCatID')
                     .removeAttr('selected');
                 $("#txtCatID > [value=" + catID + "]").attr("selected", "true");
                 $.ajax({

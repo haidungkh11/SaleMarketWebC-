@@ -17,7 +17,7 @@
     <!-- Vendor CSS (Contain Bootstrap, Icon Fonts) -->
     <link rel="stylesheet" href="~/assets/css/vendor/font-awesome.min.css" />
     <link rel="stylesheet" href="~/assets/css/vendor/Pe-icon-7-stroke.css" />
-
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- Plugin CSS (Global Plugins Files) -->
     <link rel="stylesheet" href="~/assets/css/plugins/animate.min.css">
     <link rel="stylesheet" href="~/assets/css/plugins/jquery-ui.min.css">
@@ -27,14 +27,16 @@
 
     <!-- Style CSS -->
     <link rel="stylesheet" href="~/assets/css/style.css">
-
+    <!-- jQuery -->
+    
+    }
 </head>
 
 <body>
 
     <div class="main-wrapper">
-
-        <!-- Begin Main Header Area -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <!-- Begin Main Header Area --> 
         @await Html.PartialAsync("_HeaderPartialView.cshtml")
         <!-- Main Header Area End Here -->
         @RenderBody()
@@ -69,7 +71,7 @@
     <script src="~/assets/js/plugins/jquery.nice-select.js"></script>
     <script src="~/assets/js/plugins/parallax.min.js"></script>
     <script src="~/assets/js/plugins/jquery.magnific-popup.min.js"></script>
-
+    
     <!--Main JS (Common Activation Codes)-->
     <script src="~/assets/js/main.js"></script>
     @await Component.InvokeAsync("Notyf")
